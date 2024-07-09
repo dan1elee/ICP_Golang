@@ -25,10 +25,10 @@ func main() {
 			login_api.POST("teacher/", api.TeacherLogin)
 			login_api.POST("admin/", api.AdminLogin)
 		}
-		// register_api := icp_api.Group("register/")
-		// {
-
-		// }
+		register_api := icp_api.Group("register/")
+		{
+			register_api.POST("student", api.StudentRegister)
+		}
 	}
 
 	router.Run()
