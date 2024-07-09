@@ -1,6 +1,7 @@
 package api
 
 import (
+	"ICP_Golang/encrypt"
 	"ICP_Golang/model"
 	"ICP_Golang/token"
 	"fmt"
@@ -109,4 +110,28 @@ func AdminLogin(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "description": "Wrong userName or userPassword"})
 		return
 	}
+}
+
+func StudentRegister(c *gin.Context) {
+	var thisStudent model.Student
+	if userNickName, exist := c.GetPostForm("userNickName"); exist {
+		thisStudent.Name = userNickName
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "description": "Nickname field cannot be empty"})
+		return
+	}
+	if userName, exist := c.GetPostForm("userName"); exist {
+		thisStudent.StudentId = userName
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "description": "Name field cannot be empty"})
+		return
+	}
+	if userPassword, exist := c.GetPostForm("userPassword"); exist {
+		thisStudent.Password = encrypt.EncryptPassword(userPassword)
+	}
+	if model.HasStudent(thisStudent.StudentId) {
+		c.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict})
+		return
+	}
+	thisStudent.Insert()
 }

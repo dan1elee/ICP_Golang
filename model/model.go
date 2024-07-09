@@ -202,6 +202,16 @@ func (teacher *Teacher) Delete() error {
 	return DB.Delete(teacher).Error
 }
 
+func (student *Student) Insert() error {
+	return DB.Create(student).Error
+}
+
+func HasStudent(id string) bool {
+	var existStudent Student
+	result := DB.First(&existStudent, id)
+	return !result.RecordNotFound()
+}
+
 func (student *Student) IncreaseEvalCnt() error {
 	return DB.Model(student).Updates(map[string]interface{}{
 		"eval_cnt": student.EvalCnt + 1,
