@@ -133,5 +133,37 @@ func StudentRegister(c *gin.Context) {
 		c.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict})
 		return
 	}
-	thisStudent.Insert()
+	if err := thisStudent.Insert(); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": http.StatusUnprocessableEntity})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+}
+
+func TeacherRegister(c *gin.Context) {
+	var thisTeacher model.Teacher
+	if userNickName, exist := c.GetPostForm("userNickName"); exist {
+		thisTeacher.Name = userNickName
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "description": "Nickname field cannot be empty"})
+		return
+	}
+	if userName, exist := c.GetPostForm("userName"); exist {
+		thisTeacher.TeacherId = userName
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "description": "Name field cannot be empty"})
+		return
+	}
+	if userPassword, exist := c.GetPostForm("userPassword"); exist {
+		thisTeacher.Password = encrypt.EncryptPassword(userPassword)
+	}
+	if model.HasStudent(thisTeacher.TeacherId) {
+		c.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict})
+		return
+	}
+	if err := thisTeacher.Insert(); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": http.StatusUnprocessableEntity})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 }
