@@ -28,6 +28,7 @@ func main() {
 		register_api := icp_api.Group("register/")
 		{
 			register_api.POST("student/", api.StudentRegister)
+			register_api.POST("teacher/", api.TeacherRegister)
 		}
 	}
 
