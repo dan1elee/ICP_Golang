@@ -162,6 +162,12 @@ func (teacher *Teacher) Insert() error {
 	return DB.Create(teacher).Error
 }
 
+func HasTeacher(id string) bool {
+	var existTeacher Teacher
+	result := DB.First(&existTeacher, id)
+	return !result.RecordNotFound()
+}
+
 func (teacher *Teacher) UpdateName() error {
 	return DB.Model(teacher).Updates(map[string]interface{}{
 		"password": teacher.Password,

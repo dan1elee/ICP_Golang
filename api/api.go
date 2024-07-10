@@ -157,7 +157,7 @@ func TeacherRegister(c *gin.Context) {
 	if userPassword, exist := c.GetPostForm("userPassword"); exist {
 		thisTeacher.Password = encrypt.EncryptPassword(userPassword)
 	}
-	if model.HasStudent(thisTeacher.TeacherId) {
+	if model.HasTeacher(thisTeacher.TeacherId) {
 		c.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict})
 		return
 	}
