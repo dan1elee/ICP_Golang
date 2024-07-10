@@ -159,7 +159,7 @@ func InitDB() (*gorm.DB, error) {
 }
 
 func (teacher *Teacher) Insert() error {
-	return DB.Create(teacher).Error
+	return DB.Model(&Teacher{}).Create(teacher).Error
 }
 
 func HasTeacher(id string) bool {
