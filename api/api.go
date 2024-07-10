@@ -2,6 +2,7 @@ package api
 
 import (
 	"ICP_Golang/encrypt"
+	"ICP_Golang/enums"
 	"ICP_Golang/model"
 	"ICP_Golang/token"
 	"fmt"
@@ -31,7 +32,7 @@ func StudentLogin(c *gin.Context) {
 	}
 	fmt.Println("请求登录的学生姓名为", thisStudent.Name)
 	if userPassword == thisStudent.Password {
-		tokenString, err := token.GenToken(userName)
+		tokenString, err := token.GenToken(userName, enums.STUDENT)
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"status": http.StatusServiceUnavailable, "description": "JWT process error"})
 			return
@@ -65,7 +66,7 @@ func TeacherLogin(c *gin.Context) {
 	}
 	fmt.Println("请求登录的教师姓名为", thisTeacher.Name)
 	if userPassword == thisTeacher.Password {
-		tokenString, err := token.GenToken(userName)
+		tokenString, err := token.GenToken(userName, enums.TEACHER)
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"status": http.StatusServiceUnavailable, "description": "JWT process error"})
 			return
@@ -99,7 +100,7 @@ func AdminLogin(c *gin.Context) {
 	}
 	fmt.Println("请求登录的管理员姓名为", thisAdmin.Name)
 	if userPassword == thisAdmin.Password {
-		tokenString, err := token.GenToken(userName)
+		tokenString, err := token.GenToken(userName, enums.ADMIN)
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"status": http.StatusServiceUnavailable, "description": "JWT process error"})
 			return

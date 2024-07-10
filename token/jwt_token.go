@@ -8,7 +8,8 @@ import (
 )
 
 type MyClaims struct {
-	Username string `json:"username"`
+	Username   string `json:"username"`
+	UserAccess uint   `json:"useraccess"`
 	jwt.RegisteredClaims
 }
 
@@ -16,9 +17,10 @@ const TokenExpireDuration = time.Hour * 2
 
 var MySecret = []byte("ICP-secret-key")
 
-func GenToken(username string) (string, error) {
+func GenToken(username string, useraccess uint) (string, error) {
 	c := MyClaims{
 		username,
+		useraccess,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExpireDuration)),
 			Issuer:    "ICP-project",
