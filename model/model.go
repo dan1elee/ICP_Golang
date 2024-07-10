@@ -289,6 +289,22 @@ func (studentHomework *StudentHomework) Delete() error {
 	return DB.Delete(studentHomework).Error
 }
 
+func GetStudentSelectedCourse(id string) []string {
+	var thisStudentCourses []StudentCourse
+	DB.Find(&thisStudentCourses, id)
+	var courseIds []string
+	for _, thisStudentCourse := range thisStudentCourses {
+		courseIds = append(courseIds, thisStudentCourse.CourseId)
+	}
+	return courseIds
+}
+
+func GetExtraCourses(ids []string) []string {
+	var extraCoursesId []string
+	DB.Not(map[string]interface{}{"course_id": ids}).Pluck("course_id", &extraCoursesId)
+	return extraCoursesId
+}
+
 //todo
 
 func (course *Course) AfterSave(db *gorm.DB) error {
@@ -316,7 +332,7 @@ func (courseEval *CourseEval) AfterSave(db *gorm.DB) error {
 		Average  int
 	}
 	var result Result
-	db.Model(&CourseEval{}).Select("course_id, avg(score)").Where("course_id = ?",
+	db.Model(&CourseEval{}).Select("course_id", "avg(score)").Where("course_id = ?",
 		courseEval.CourseId).First(&result)
 	var thisCourse Course
 	db.First(&thisCourse, courseEval.CourseId)

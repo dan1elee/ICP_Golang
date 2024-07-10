@@ -165,3 +165,13 @@ func TeacherRegister(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 }
+
+func GetAllAvailableCourses(c *gin.Context) {
+	userName, exist := c.GetQuery("userName")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+	}
+	selectedCourseIds := model.GetStudentSelectedCourse(userName)
+	availableCourseIds := model.GetExtraCourses(selectedCourseIds)
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "id": availableCourseIds})
+}
