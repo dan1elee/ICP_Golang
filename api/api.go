@@ -23,9 +23,8 @@ func StudentLogin(c *gin.Context) {
 		return
 	}
 	fmt.Println("StudentLogin得到的学号和密码是 ", userName, " ", userPassword)
-	var thisStudent model.Student
-	result := model.DB.First(&thisStudent, userName)
-	if result.Error != nil {
+	exist, thisStudent := model.GetExistStudent(userName)
+	if !exist {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "description": "Wrong userName or userPassword"})
 		fmt.Println("找不到该学生")
 		return
@@ -57,9 +56,8 @@ func TeacherLogin(c *gin.Context) {
 		return
 	}
 	fmt.Println("TeacherLogin得到的学号和密码是 ", userName, " ", userPassword)
-	var thisTeacher model.Teacher
-	result := model.DB.First(&thisTeacher, userName)
-	if result.Error != nil {
+	exist, thisTeacher := model.GetExistTeacher(userName)
+	if !exist {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "description": "Wrong userName or userPassword"})
 		fmt.Println("找不到该教师")
 		return
@@ -91,9 +89,8 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 	fmt.Println("AdminLogin得到的学号和密码是 ", userName, " ", userPassword)
-	var thisAdmin model.Admin
-	result := model.DB.First(&thisAdmin, userName)
-	if result.Error != nil {
+	exist, thisAdmin := model.GetExistAdmin(userName)
+	if !exist {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "description": "Wrong userName or userPassword"})
 		fmt.Println("找不到该管理员")
 		return

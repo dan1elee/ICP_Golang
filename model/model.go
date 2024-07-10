@@ -168,6 +168,17 @@ func HasTeacher(id string) bool {
 	return !result.RecordNotFound()
 }
 
+func GetExistTeacher(id string) (bool, *Teacher) {
+	var existTeacher = new(Teacher)
+	result := DB.First(&existTeacher, id)
+	exist := !result.RecordNotFound()
+	if !exist {
+		return false, nil
+	} else {
+		return true, existTeacher
+	}
+}
+
 func (teacher *Teacher) UpdateName() error {
 	return DB.Model(teacher).Updates(map[string]interface{}{
 		"password": teacher.Password,
@@ -218,6 +229,17 @@ func HasStudent(id string) bool {
 	return !result.RecordNotFound()
 }
 
+func GetExistStudent(id string) (bool, *Student) {
+	var existStudent = new(Student)
+	result := DB.First(&existStudent, id)
+	exist := !result.RecordNotFound()
+	if !exist {
+		return false, nil
+	} else {
+		return true, existStudent
+	}
+}
+
 func (student *Student) IncreaseEvalCnt() error {
 	return DB.Model(student).Updates(map[string]interface{}{
 		"eval_cnt": student.EvalCnt + 1,
@@ -240,6 +262,17 @@ func (student *Student) DecreaseDiscussCnt() error {
 	return DB.Model(student).Updates(map[string]interface{}{
 		"discuss_cnt": student.DiscussCnt - 1,
 	}).Error
+}
+
+func GetExistAdmin(id string) (bool, *Admin) {
+	var existAdmin = new(Admin)
+	result := DB.First(&existAdmin, id)
+	exist := !result.RecordNotFound()
+	if !exist {
+		return false, nil
+	} else {
+		return true, existAdmin
+	}
 }
 
 func (course *Course) UpdateAvg(avg int) error {
