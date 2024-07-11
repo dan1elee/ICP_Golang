@@ -332,8 +332,7 @@ func (courseEval *CourseEval) AfterSave(db *gorm.DB) error {
 		Average  int
 	}
 	var result Result
-	db.Model(&CourseEval{}).Select("course_id", "avg(score)").Where("course_id = ?",
-		courseEval.CourseId).First(&result)
+	db.Model(&CourseEval{}).Select("course_id", "avg(score)").Where(map[string]interface{}{"course_id": courseEval.CourseId}).First(&result)
 	var thisCourse Course
 	db.Model(&Course{}).First(&thisCourse, courseEval.CourseId)
 	return thisCourse.UpdateAvg(result.Average)
@@ -352,8 +351,7 @@ func (courseEval *CourseEval) AfterDelete(db *gorm.DB) error {
 		Average  int
 	}
 	var result Result
-	db.Model(&CourseEval{}).Select("course_id", "avg(score)").Where("course_id = ?",
-		courseEval.CourseId).First(&result)
+	db.Model(&CourseEval{}).Select("course_id", "avg(score)").Where(map[string]interface{}{"course_id": courseEval.CourseId}).First(&result)
 	var thisCourse Course
 	db.Model(&Course{}).First(&thisCourse, courseEval.CourseId)
 	return thisCourse.UpdateAvg(result.Average)
