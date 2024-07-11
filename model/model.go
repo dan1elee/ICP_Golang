@@ -291,7 +291,9 @@ func (studentHomework *StudentHomework) Delete() error {
 
 func GetStudentSelectedCourse(id string) []string {
 	var thisStudentCourses []StudentCourse
-	DB.Model(&StudentCourse{}).Find(&thisStudentCourses, "student_id = ?", id)
+	DB.Model(&StudentCourse{}).Where(map[string]interface{}{
+		"student_id": id,
+	}).Find(&thisStudentCourses)
 	var courseIds []string
 	for _, thisStudentCourse := range thisStudentCourses {
 		courseIds = append(courseIds, thisStudentCourse.CourseId)
@@ -362,7 +364,9 @@ func (homework *Homework) AfterSave(db *gorm.DB) error {
 		var thisCourse Course
 		db.Model(&Course{}).First(&thisCourse, homework.CourseId)
 		var students []StudentCourse
-		db.Model(&Student{}).Find(&students, "course_id = ?", homework.CourseId)
+		db.Model(&Student{}).Where(map[string]interface{}{
+			"course_id": homework.CourseId,
+		}).Find(&students)
 		for _, student := range students {
 			studentHomework := &StudentHomework{StudentId: student.StudentId, HomeworkId: homework.HomeworkId}
 			err := studentHomework.Insert()
@@ -381,7 +385,9 @@ func (homework *Homework) AfterSave(db *gorm.DB) error {
 func (homework *Homework) BeforeDelete(db *gorm.DB) error {
 	var studentHomeworks []StudentHomework
 	if homework.IsTeacher == 1 {
-		db.Model(&StudentHomework{}).Find(&studentHomeworks, "homework_id = ?", homework.HomeworkId)
+		db.Model(&StudentHomework{}).Where(map[string]interface{}{
+			"homework_id": homework.HomeworkId,
+		}).Find(&studentHomeworks)
 		for _, studentHomework := range studentHomeworks {
 			err := studentHomework.Delete()
 			if err != nil {
@@ -390,7 +396,10 @@ func (homework *Homework) BeforeDelete(db *gorm.DB) error {
 		}
 		return nil
 	} else {
-		db.Model(&StudentHomework{}).Find(&studentHomeworks, "homework_id = ? and student_id = ?", homework.HomeworkId, homework.StudentId)
+		db.Model(&StudentHomework{}).Where(map[string]interface{}{
+			"homework_id": homework.HomeworkId,
+			"student_id":  homework.StudentId,
+		}).Find(&studentHomeworks)
 		for _, studentHomework := range studentHomeworks {
 			err := studentHomework.Delete()
 			if err != nil {
