@@ -154,6 +154,13 @@ func InitDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	DB.AutoMigrate(&Student{}, &Teacher{}, &Admin{},
+		&Course{}, &StudentCourse{}, &CourseEval{},
+		&Homework{}, &StudentHomework{},
+		&MainComment{}, &SecondComment{},
+		&StudentMain{}, &TeacherMain{}, &AdminMain{},
+		&StudentSecond{}, &TeacherSecond{}, &AdminSecond{},
+		&StudentAddHomework{}, &TeacherHomework{})
 	//migrate todo
 	return DB, err
 }
