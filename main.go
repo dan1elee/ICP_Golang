@@ -9,7 +9,8 @@ import (
 )
 
 func init() {
-	confFilePath := flag.String("configuration_file_path", "conf/conf.yaml", "The yaml configuration file")
+	confFilePath := flag.String("conf", "conf/conf.yaml", "The yaml configuration file")
+	flag.Parse()
 	conf.InitConfiguration(*confFilePath)
 	// db.AutoMigrate(&todoListModel{})
 }
