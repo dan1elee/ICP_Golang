@@ -328,6 +328,25 @@ func GetExtraCourses(ids []string) []string {
 	return extraCoursesId
 }
 
+func GetCourseHomeworks(id string) []string {
+	var homework_ids []string
+	DB.Model(&Homework{}).Where(map[string]interface{}{
+		"course_id": id,
+	}).Pluck("homework_id", &homework_ids)
+	return homework_ids
+}
+
+func AddNewSelectHomework(studentId string, homework_ids []string) {
+	var stuHomeworkInfos []map[string]interface{}
+	for _, homework_id := range homework_ids {
+		stuHomeworkInfos = append(stuHomeworkInfos, map[string]interface{}{
+			"student_id":  studentId,
+			"homework_id": homework_id,
+		})
+	}
+	DB.Model(&StudentHomework{}).Create(stuHomeworkInfos)
+}
+
 //todo
 
 func (course *Course) AfterSave(db *gorm.DB) error {

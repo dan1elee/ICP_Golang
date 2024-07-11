@@ -214,3 +214,19 @@ func GetAllCourses(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "courses": allCourses})
 	return
 }
+
+func AddSelectCourse(c *gin.Context) {
+	studentId, exist := c.GetQuery("sid")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	courseId, exist := c.GetQuery("cid")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	homework_ids := model.GetCourseHomeworks(courseId)
+	model.AddNewSelectHomework(studentId, homework_ids)
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+}
