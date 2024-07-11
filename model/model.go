@@ -164,13 +164,13 @@ func (teacher *Teacher) Insert() error {
 
 func HasTeacher(id string) bool {
 	var existTeacher Teacher
-	result := DB.First(&existTeacher, id)
+	result := DB.Model(&Teacher{}).First(&existTeacher, id)
 	return !result.RecordNotFound()
 }
 
 func GetExistTeacher(id string) (bool, *Teacher) {
 	var existTeacher = new(Teacher)
-	result := DB.First(&existTeacher, id)
+	result := DB.Model(&Teacher{}).First(&existTeacher, id)
 	exist := !result.RecordNotFound()
 	if !exist {
 		return false, nil
@@ -216,22 +216,22 @@ func (teacher *Teacher) DecreaseDiscussCnt() error {
 }
 
 func (teacher *Teacher) Delete() error {
-	return DB.Delete(teacher).Error
+	return DB.Model(&Teacher{}).Delete(teacher).Error
 }
 
 func (student *Student) Insert() error {
-	return DB.Create(student).Error
+	return DB.Model(&Student{}).Create(student).Error
 }
 
 func HasStudent(id string) bool {
 	var existStudent Student
-	result := DB.First(&existStudent, id)
+	result := DB.Model(&Student{}).First(&existStudent, id)
 	return !result.RecordNotFound()
 }
 
 func GetExistStudent(id string) (bool, *Student) {
 	var existStudent = new(Student)
-	result := DB.First(&existStudent, id)
+	result := DB.Model(&Student{}).First(&existStudent, id)
 	exist := !result.RecordNotFound()
 	if !exist {
 		return false, nil
@@ -266,7 +266,7 @@ func (student *Student) DecreaseDiscussCnt() error {
 
 func GetExistAdmin(id string) (bool, *Admin) {
 	var existAdmin = new(Admin)
-	result := DB.First(&existAdmin, id)
+	result := DB.Model(&Admin{}).First(&existAdmin, id)
 	exist := !result.RecordNotFound()
 	if !exist {
 		return false, nil
@@ -282,16 +282,16 @@ func (course *Course) UpdateAvg(avg int) error {
 }
 
 func (studentHomework *StudentHomework) Insert() error {
-	return DB.Create(studentHomework).Error
+	return DB.Model(&StudentHomework{}).Create(studentHomework).Error
 }
 
 func (studentHomework *StudentHomework) Delete() error {
-	return DB.Delete(studentHomework).Error
+	return DB.Model(&StudentHomework{}).Delete(studentHomework).Error
 }
 
 func GetStudentSelectedCourse(id string) []string {
 	var thisStudentCourses []StudentCourse
-	DB.Find(&thisStudentCourses, id)
+	DB.Model(&StudentCourse{}).Find(&thisStudentCourses, id)
 	var courseIds []string
 	for _, thisStudentCourse := range thisStudentCourses {
 		courseIds = append(courseIds, thisStudentCourse.CourseId)
@@ -301,7 +301,7 @@ func GetStudentSelectedCourse(id string) []string {
 
 func GetExtraCourses(ids []string) []string {
 	var extraCoursesId []string
-	DB.Not(map[string]interface{}{"course_id": ids}).Pluck("course_id", &extraCoursesId)
+	DB.Model(&Course{}).Not(map[string]interface{}{"course_id": ids}).Pluck("course_id", &extraCoursesId)
 	return extraCoursesId
 }
 
@@ -309,20 +309,20 @@ func GetExtraCourses(ids []string) []string {
 
 func (course *Course) AfterSave(db *gorm.DB) error {
 	var thisTeacher Teacher
-	db.First(&thisTeacher, course.TeacherId)
+	db.Model(&Teacher{}).First(&thisTeacher, course.TeacherId)
 	return thisTeacher.IncreaseCourseCnt()
 }
 
 func (course *Course) BeforeDelete(db *gorm.DB) error {
 	var thisTeacher Teacher
-	db.First(&thisTeacher, course.TeacherId)
+	db.Model(&Teacher{}).First(&thisTeacher, course.TeacherId)
 	return thisTeacher.DecreaseCourseCnt()
 }
 
 func (courseEval *CourseEval) AfterSave(db *gorm.DB) error {
 	var thisStudent Student
 	var err error
-	db.First(&thisStudent, courseEval.StudentId)
+	db.Model(&Student{}).First(&thisStudent, courseEval.StudentId)
 	err = thisStudent.IncreaseEvalCnt()
 	if err != nil {
 		return err
@@ -335,14 +335,14 @@ func (courseEval *CourseEval) AfterSave(db *gorm.DB) error {
 	db.Model(&CourseEval{}).Select("course_id", "avg(score)").Where("course_id = ?",
 		courseEval.CourseId).First(&result)
 	var thisCourse Course
-	db.First(&thisCourse, courseEval.CourseId)
+	db.Model(&Course{}).First(&thisCourse, courseEval.CourseId)
 	return thisCourse.UpdateAvg(result.Average)
 }
 
 func (courseEval *CourseEval) AfterDelete(db *gorm.DB) error {
 	var thisStudent Student
 	var err error
-	db.First(&thisStudent, courseEval.StudentId)
+	db.Model(&Student{}).First(&thisStudent, courseEval.StudentId)
 	err = thisStudent.DecreaseEvalCnt()
 	if err != nil {
 		return err
@@ -355,16 +355,16 @@ func (courseEval *CourseEval) AfterDelete(db *gorm.DB) error {
 	db.Model(&CourseEval{}).Select("course_id, avg(score)").Where("course_id = ?",
 		courseEval.CourseId).First(&result)
 	var thisCourse Course
-	db.First(&thisCourse, courseEval.CourseId)
+	db.Model(&Course{}).First(&thisCourse, courseEval.CourseId)
 	return thisCourse.UpdateAvg(result.Average)
 }
 
 func (homework *Homework) AfterSave(db *gorm.DB) error {
 	if homework.IsTeacher == 1 {
 		var thisCourse Course
-		db.First(&thisCourse, homework.CourseId)
+		db.Model(&Course{}).First(&thisCourse, homework.CourseId)
 		var students []StudentCourse
-		db.Find(&students, "course_id = ?", homework.CourseId)
+		db.Model(&Student{}).Find(&students, "course_id = ?", homework.CourseId)
 		for _, student := range students {
 			studentHomework := &StudentHomework{StudentId: student.StudentId, HomeworkId: homework.HomeworkId}
 			err := studentHomework.Insert()
@@ -383,7 +383,7 @@ func (homework *Homework) AfterSave(db *gorm.DB) error {
 func (homework *Homework) BeforeDelete(db *gorm.DB) error {
 	var studentHomeworks []StudentHomework
 	if homework.IsTeacher == 1 {
-		db.Find(&studentHomeworks, "homework_id = ?", homework.HomeworkId)
+		db.Model(&StudentHomework{}).Find(&studentHomeworks, "homework_id = ?", homework.HomeworkId)
 		for _, studentHomework := range studentHomeworks {
 			err := studentHomework.Delete()
 			if err != nil {
@@ -392,7 +392,7 @@ func (homework *Homework) BeforeDelete(db *gorm.DB) error {
 		}
 		return nil
 	} else {
-		db.Find(&studentHomeworks, "homework_id = ? and student_id = ?", homework.HomeworkId, homework.StudentId)
+		db.Model(&StudentHomework{}).Find(&studentHomeworks, "homework_id = ? and student_id = ?", homework.HomeworkId, homework.StudentId)
 		for _, studentHomework := range studentHomeworks {
 			err := studentHomework.Delete()
 			if err != nil {
@@ -406,11 +406,11 @@ func (homework *Homework) BeforeDelete(db *gorm.DB) error {
 func (mainComment *MainComment) AfterSave(db *gorm.DB) error {
 	if mainComment.IsTeacher == 1 {
 		var thisTeacher Teacher
-		db.First(&thisTeacher, mainComment.TeacherId)
+		db.Model(&Teacher{}).First(&thisTeacher, mainComment.TeacherId)
 		return thisTeacher.IncreaseDiscussCnt()
 	} else {
 		var thisStudent Student
-		db.First(&thisStudent, mainComment.StudentId)
+		db.Model(&Student{}).First(&thisStudent, mainComment.StudentId)
 		return thisStudent.IncreaseDiscussCnt()
 	}
 }
@@ -418,11 +418,11 @@ func (mainComment *MainComment) AfterSave(db *gorm.DB) error {
 func (mainComment *MainComment) BeforeDelete(db *gorm.DB) error {
 	if mainComment.IsTeacher == 1 {
 		var thisTeacher Teacher
-		db.First(&thisTeacher, mainComment.TeacherId)
+		db.Model(&Teacher{}).First(&thisTeacher, mainComment.TeacherId)
 		return thisTeacher.DecreaseDiscussCnt()
 	} else {
 		var thisStudent Student
-		db.First(&thisStudent, mainComment.StudentId)
+		db.Model(&Student{}).First(&thisStudent, mainComment.StudentId)
 		return thisStudent.DecreaseDiscussCnt()
 	}
 }
@@ -430,11 +430,11 @@ func (mainComment *MainComment) BeforeDelete(db *gorm.DB) error {
 func (SecondComment *SecondComment) AfterSave(db *gorm.DB) error {
 	if SecondComment.IsTeacher == 1 {
 		var thisTeacher Teacher
-		db.First(&thisTeacher, SecondComment.TeacherId)
+		db.Model(&Teacher{}).First(&thisTeacher, SecondComment.TeacherId)
 		return thisTeacher.IncreaseDiscussCnt()
 	} else {
 		var thisStudent Student
-		db.First(&thisStudent, SecondComment.StudentId)
+		db.Model(&Student{}).First(&thisStudent, SecondComment.StudentId)
 		return thisStudent.IncreaseDiscussCnt()
 	}
 }
@@ -442,11 +442,11 @@ func (SecondComment *SecondComment) AfterSave(db *gorm.DB) error {
 func (SecondComment *SecondComment) BeforeDelete(db *gorm.DB) error {
 	if SecondComment.IsTeacher == 1 {
 		var thisTeacher Teacher
-		db.First(&thisTeacher, SecondComment.TeacherId)
+		db.Model(&Teacher{}).First(&thisTeacher, SecondComment.TeacherId)
 		return thisTeacher.DecreaseDiscussCnt()
 	} else {
 		var thisStudent Student
-		db.First(&thisStudent, SecondComment.StudentId)
+		db.Model(&Student{}).First(&thisStudent, SecondComment.StudentId)
 		return thisStudent.DecreaseDiscussCnt()
 	}
 }
