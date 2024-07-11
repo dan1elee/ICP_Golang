@@ -30,6 +30,12 @@ func main() {
 			register_api.POST("student/", api.StudentRegister)
 			register_api.POST("teacher/", api.TeacherRegister)
 		}
+		courses_api := icp_api.Group("courses/")
+		{
+			courses_api.GET("available/", api.GetAllAvailableCourses)
+			courses_api.GET("all/", api.GetAllCourses)
+			courses_api.PUT("select/", api.AddSelectCourse)
+		}
 	}
 
 	router.Run()
