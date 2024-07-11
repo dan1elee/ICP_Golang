@@ -193,3 +193,24 @@ func GetAllAvailableCourses(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "id": availableCourseIds})
 	return
 }
+
+func GetAllCourses(c *gin.Context) {
+	userToken, exist := c.GetQuery("token")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	tokenStruct, err := token.ParseToken(userToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		return
+	}
+	// todo 权限验证具体文件权限
+	allCourses := model.GetAllCourses()
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "courses": allCourses})
+	return
+}

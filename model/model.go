@@ -2,6 +2,7 @@ package model
 
 import (
 	"ICP_Golang/conf"
+	"encoding/json"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -37,11 +38,11 @@ type Admin struct {
 }
 
 type Course struct {
-	CourseId     string `gorm:"type:varchar(40);primary_key;unique_index"`
-	Name         string `gorm:"type:varchar(128)"`
-	Score        float32
-	Introduction string `gorm:"type:varchar(1000)"`
-	TeacherId    string `gorm:"type:varchar(40)"`
+	CourseId     string  `gorm:"type:varchar(40);primary_key;unique_index" json:"course_id"`
+	Name         string  `gorm:"type:varchar(128)" json:"course_name"`
+	Score        float32 `json:"score"`
+	Introduction string  `gorm:"type:varchar(1000)" json:"course_intro"`
+	TeacherId    string  `gorm:"type:varchar(40)" json:"teacher_id"`
 }
 
 type StudentCourse struct {
@@ -286,6 +287,19 @@ func (course *Course) UpdateAvg(avg int) error {
 	return DB.Model(course).Updates(map[string]interface{}{
 		"score": avg,
 	}).Error
+}
+
+func GetAllCourses() []map[string]interface{} {
+	var courses []Course
+	DB.Model(&Course{}).Find(&courses)
+	var courseInfos []map[string]interface{}
+	for _, course := range courses {
+		courseBytes, _ := json.Marshal(&course)
+		courseInfo := new(map[string]interface{})
+		json.Unmarshal(courseBytes, courseInfo)
+		courseInfos = append(courseInfos, *courseInfo)
+	}
+	return courseInfos
 }
 
 func (studentHomework *StudentHomework) Insert() error {
