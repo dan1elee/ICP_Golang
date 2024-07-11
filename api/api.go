@@ -216,7 +216,7 @@ func GetAllCourses(c *gin.Context) {
 }
 
 func AddSelectCourse(c *gin.Context) {
-	userToken, exist := c.GetQuery("token")
+	userToken, exist := c.GetPostForm("token")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
@@ -231,12 +231,12 @@ func AddSelectCourse(c *gin.Context) {
 		return
 	}
 	// todo 权限验证具体文件权限
-	studentId, exist := c.GetQuery("sid")
+	studentId, exist := c.GetPostForm("sid")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
 	}
-	courseId, exist := c.GetQuery("cid")
+	courseId, exist := c.GetPostForm("cid")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
