@@ -45,3 +45,7 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 	}
 	return nil, errors.New("invalid token")
 }
+
+func HaveAccess(myClaims *MyClaims, level uint) bool {
+	return myClaims.UserAccess&level != 0
+}

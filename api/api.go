@@ -136,6 +136,7 @@ func StudentRegister(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
 }
 
 func TeacherRegister(c *gin.Context) {
@@ -164,14 +165,31 @@ func TeacherRegister(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
 }
 
 func GetAllAvailableCourses(c *gin.Context) {
 	userName, exist := c.GetQuery("userName")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	userToken, exist := c.GetQuery("token")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	tokenStruct, err := token.ParseToken(userToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		return
 	}
 	selectedCourseIds := model.GetStudentSelectedCourse(userName)
 	availableCourseIds := model.GetExtraCourses(selectedCourseIds)
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "id": availableCourseIds})
+	return
 }
