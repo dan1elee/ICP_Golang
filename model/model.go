@@ -291,7 +291,7 @@ func (studentHomework *StudentHomework) Delete() error {
 
 func GetStudentSelectedCourse(id string) []string {
 	var thisStudentCourses []StudentCourse
-	DB.Model(&StudentCourse{}).Find(&thisStudentCourses, id)
+	DB.Model(&StudentCourse{}).Find(&thisStudentCourses, "student_id = ?", id)
 	var courseIds []string
 	for _, thisStudentCourse := range thisStudentCourses {
 		courseIds = append(courseIds, thisStudentCourse.CourseId)
