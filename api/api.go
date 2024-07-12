@@ -189,8 +189,8 @@ func GetAllAvailableCourses(c *gin.Context) {
 		return
 	}
 	selectedCourseIds := model.GetStudentSelectedCourse(userName)
-	availableCourseIds := model.GetExtraCourses(selectedCourseIds)
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "id": availableCourseIds})
+	availableCourses := model.GetExtraCourses(selectedCourseIds)
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "courses": availableCourses})
 	return
 }
 
