@@ -36,6 +36,15 @@ func main() {
 			courses_api.GET("all/", api.GetAllCourses)
 			courses_api.PUT("select/", api.AddSelectCourse)
 		}
+		password_api := icp_api.Group("password/")
+		{
+			password_change_api := password_api.Group("change/")
+			{
+				password_change_api.PUT("student/", api.StudentPasswordChange)
+				password_change_api.PUT("teacher/", api.TeacherPasswordChange)
+				password_change_api.PUT("admin/", api.AdminPasswordChange)
+			}
+		}
 	}
 
 	router.Run()

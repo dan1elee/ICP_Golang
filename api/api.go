@@ -274,3 +274,69 @@ func GetCourseInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "info": res})
 	return
 }
+
+func StudentPasswordChange(c *gin.Context) {
+	studentId, exist := c.GetQuery("id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	prevPassword, exist := c.GetQuery("PassWord0")
+	newPassword, exist := c.GetQuery("Password1")
+	_, thisStudent := model.GetExistStudent(studentId)
+	if thisStudent.Password != prevPassword {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	err := thisStudent.UpdatePassword(newPassword)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
+}
+
+func TeacherPasswordChange(c *gin.Context) {
+	teacherId, exist := c.GetQuery("id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	prevPassword, exist := c.GetQuery("PassWord0")
+	newPassword, exist := c.GetQuery("Password1")
+	_, thisTeacher := model.GetExistTeacher(teacherId)
+	if thisTeacher.Password != prevPassword {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	err := thisTeacher.UpdatePassword(newPassword)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
+}
+
+func AdminPasswordChange(c *gin.Context) {
+	adminId, exist := c.GetQuery("id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	prevPassword, exist := c.GetQuery("PassWord0")
+	newPassword, exist := c.GetQuery("Password1")
+	_, thisAdmin := model.GetExistAdmin(adminId)
+	if thisAdmin.Password != prevPassword {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	err := thisAdmin.UpdatePassword(newPassword)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
+}

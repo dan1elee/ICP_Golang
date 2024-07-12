@@ -167,6 +167,12 @@ func InitDB() (*gorm.DB, error) {
 	return DB, err
 }
 
+func (admin *Admin) UpdatePassword(password string) error {
+	return DB.Model(&Admin{}).Updates(map[string]interface{}{
+		"password": password,
+	}).Error
+}
+
 func (teacher *Teacher) Insert() error {
 	return DB.Model(&Teacher{}).Create(teacher).Error
 }
@@ -194,9 +200,9 @@ func (teacher *Teacher) UpdateName() error {
 	}).Error
 }
 
-func (teacher *Teacher) UpdatePassword() error {
+func (teacher *Teacher) UpdatePassword(password string) error {
 	return DB.Model(teacher).Updates(map[string]interface{}{
-		"password": teacher.Password,
+		"password": password,
 	}).Error
 }
 
@@ -270,6 +276,12 @@ func (student *Student) IncreaseDiscussCnt() error {
 func (student *Student) DecreaseDiscussCnt() error {
 	return DB.Model(student).Updates(map[string]interface{}{
 		"discuss_cnt": student.DiscussCnt - 1,
+	}).Error
+}
+
+func (student *Student) UpdatePassword(password string) error {
+	return DB.Model(student).Updates(map[string]interface{}{
+		"password": password,
 	}).Error
 }
 
