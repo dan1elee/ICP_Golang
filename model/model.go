@@ -320,16 +320,18 @@ func (studentHomework *StudentHomework) Delete() error {
 	return DB.Model(&StudentHomework{}).Delete(studentHomework).Error
 }
 
-func GetStudentSelectedCourse(id string) []string {
+func GetStudentSelectedCourse(id string) []Course {
 	var thisStudentCourses []StudentCourse
 	DB.Model(&StudentCourse{}).Where(map[string]interface{}{
 		"student_id": id,
 	}).Find(&thisStudentCourses)
-	var courseIds []string
+	var courses []Course
 	for _, thisStudentCourse := range thisStudentCourses {
-		courseIds = append(courseIds, thisStudentCourse.CourseId)
+		var thisCourse Course
+		DB.Model(&Course{}).First(&thisCourse, thisStudentCourse.CourseId)
+		courses = append(courses, thisCourse)
 	}
-	return courseIds
+	return courses
 }
 
 func (course *Course) ToMap() map[string]interface{} {
@@ -348,11 +350,15 @@ func GetCourseInfoById(id string) (map[string]interface{}, error) {
 	return thisCourse.ToMap(), nil
 }
 
-func GetExtraCourses(ids []string) []map[string]interface{} {
-	var courses []Course
-	DB.Model(&Course{}).Not(map[string]interface{}{"course_id": ids}).Find(&courses)
+func GetExtraCourses(courses []Course) []map[string]interface{} {
+	var ids []string
+	for _, value := range courses {
+		ids = append(ids, value.CourseId)
+	}
+	var extraCourses []Course
+	DB.Model(&Course{}).Not(map[string]interface{}{"course_id": ids}).Find(&extraCourses)
 	var courseInfos []map[string]interface{}
-	for _, course := range courses {
+	for _, course := range extraCourses {
 		courseInfos = append(courseInfos, course.ToMap())
 	}
 	return courseInfos

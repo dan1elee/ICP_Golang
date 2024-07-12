@@ -188,8 +188,8 @@ func GetAllAvailableCourses(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
 		return
 	}
-	selectedCourseIds := model.GetStudentSelectedCourse(userName)
-	availableCourses := model.GetExtraCourses(selectedCourseIds)
+	selectedCourses := model.GetStudentSelectedCourse(userName)
+	availableCourses := model.GetExtraCourses(selectedCourses)
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "courses": availableCourses})
 	return
 }
@@ -380,5 +380,33 @@ func AdminPasswordChange(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
+}
+
+func GetStudentSelectedCourse(c *gin.Context) {
+	userToken, exist := c.GetPostForm("token")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	tokenStruct, err := token.ParseToken(userToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		return
+	}
+	studentId, exist := c.GetQuery("sid")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+	}
+	courses := model.GetStudentSelectedCourse(studentId)
+	var courseInfos []map[string]interface{}
+	for _, course := range courses {
+		courseInfos = append(courseInfos, course.ToMap())
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "courses": courseInfos})
 	return
 }
