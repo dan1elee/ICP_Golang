@@ -3,6 +3,7 @@ package model
 import (
 	"ICP_Golang/conf"
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -324,6 +325,15 @@ func (course *Course) ToMap() map[string]interface{} {
 	courseInfo := new(map[string]interface{})
 	json.Unmarshal(courseBytes, courseInfo)
 	return *courseInfo
+}
+
+func GetCourseInfoById(id string) (map[string]interface{}, error) {
+	var thisCourse Course
+	result := DB.Model(&Course{}).First(&thisCourse)
+	if result.RecordNotFound() {
+		return nil, errors.New("Course not found")
+	}
+	return thisCourse.ToMap(), nil
 }
 
 func GetExtraCourses(ids []string) []map[string]interface{} {
