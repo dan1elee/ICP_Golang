@@ -148,15 +148,15 @@ type TeacherHomework struct {
 	HomeWorkId string `gorm:"type:varchar(40)"`
 }
 
-var DB *gorm.DB
+var database *gorm.DB
 
 func InitDB() (*gorm.DB, error) {
 	var err error
-	DB, err = gorm.Open("mysql", conf.GetConfiguration().Database)
+	database, err = gorm.Open("mysql", conf.GetConfiguration().Database)
 	if err != nil {
 		return nil, err
 	}
-	DB.AutoMigrate(&Student{}, &Teacher{}, &Admin{},
+	database.AutoMigrate(&Student{}, &Teacher{}, &Admin{},
 		&Course{}, &StudentCourse{}, &CourseEval{},
 		&Homework{}, &StudentHomework{},
 		&MainComment{}, &SecondComment{},
@@ -164,28 +164,28 @@ func InitDB() (*gorm.DB, error) {
 		&StudentSecond{}, &TeacherSecond{}, &AdminSecond{},
 		&StudentAddHomework{}, &TeacherHomework{})
 	//migrate todo
-	return DB, err
+	return database, err
 }
 
 func (admin *Admin) UpdatePassword(password string) error {
-	return DB.Model(&Admin{}).Updates(map[string]interface{}{
+	return database.Model(&Admin{}).Updates(map[string]interface{}{
 		"password": password,
 	}).Error
 }
 
 func (teacher *Teacher) Insert() error {
-	return DB.Model(&Teacher{}).Create(teacher).Error
+	return database.Model(&Teacher{}).Create(teacher).Error
 }
 
 func HasTeacher(id string) bool {
 	var existTeacher Teacher
-	result := DB.Model(&Teacher{}).First(&existTeacher, id)
+	result := database.Model(&Teacher{}).First(&existTeacher, id)
 	return !result.RecordNotFound()
 }
 
 func GetExistTeacher(id string) (bool, *Teacher) {
 	var existTeacher = new(Teacher)
-	result := DB.Model(&Teacher{}).First(&existTeacher, id)
+	result := database.Model(&Teacher{}).First(&existTeacher, id)
 	exist := !result.RecordNotFound()
 	if !exist {
 		return false, nil
@@ -195,58 +195,58 @@ func GetExistTeacher(id string) (bool, *Teacher) {
 }
 
 func (teacher *Teacher) UpdateName() error {
-	return DB.Model(teacher).Updates(map[string]interface{}{
+	return database.Model(teacher).Updates(map[string]interface{}{
 		"password": teacher.Password,
 	}).Error
 }
 
 func (teacher *Teacher) UpdatePassword(password string) error {
-	return DB.Model(teacher).Updates(map[string]interface{}{
+	return database.Model(teacher).Updates(map[string]interface{}{
 		"password": password,
 	}).Error
 }
 
 func (teacher *Teacher) IncreaseCourseCnt() error {
-	return DB.Model(teacher).Updates(map[string]interface{}{
+	return database.Model(teacher).Updates(map[string]interface{}{
 		"course_cnt": teacher.CourseCnt + 1,
 	}).Error
 }
 
 func (teacher *Teacher) DecreaseCourseCnt() error {
-	return DB.Model(teacher).Updates(map[string]interface{}{
+	return database.Model(teacher).Updates(map[string]interface{}{
 		"course_cnt": teacher.CourseCnt - 1,
 	}).Error
 }
 
 func (teacher *Teacher) IncreaseDiscussCnt() error {
-	return DB.Model(teacher).Updates(map[string]interface{}{
+	return database.Model(teacher).Updates(map[string]interface{}{
 		"discuss_cnt": teacher.DisscussCnt + 1,
 	}).Error
 }
 
 func (teacher *Teacher) DecreaseDiscussCnt() error {
-	return DB.Model(teacher).Updates(map[string]interface{}{
+	return database.Model(teacher).Updates(map[string]interface{}{
 		"discuss_cnt": teacher.DisscussCnt - 1,
 	}).Error
 }
 
 func (teacher *Teacher) Delete() error {
-	return DB.Model(&Teacher{}).Delete(teacher).Error
+	return database.Model(&Teacher{}).Delete(teacher).Error
 }
 
 func (student *Student) Insert() error {
-	return DB.Model(&Student{}).Create(student).Error
+	return database.Model(&Student{}).Create(student).Error
 }
 
 func HasStudent(id string) bool {
 	var existStudent Student
-	result := DB.Model(&Student{}).First(&existStudent, id)
+	result := database.Model(&Student{}).First(&existStudent, id)
 	return !result.RecordNotFound()
 }
 
 func GetExistStudent(id string) (bool, *Student) {
 	var existStudent = new(Student)
-	result := DB.Model(&Student{}).First(&existStudent, id)
+	result := database.Model(&Student{}).First(&existStudent, id)
 	exist := !result.RecordNotFound()
 	if !exist {
 		return false, nil
@@ -256,38 +256,38 @@ func GetExistStudent(id string) (bool, *Student) {
 }
 
 func (student *Student) IncreaseEvalCnt() error {
-	return DB.Model(student).Updates(map[string]interface{}{
+	return database.Model(student).Updates(map[string]interface{}{
 		"eval_cnt": student.EvalCnt + 1,
 	}).Error
 }
 
 func (student *Student) DecreaseEvalCnt() error {
-	return DB.Model(student).Updates(map[string]interface{}{
+	return database.Model(student).Updates(map[string]interface{}{
 		"eval_cnt": student.EvalCnt - 1,
 	}).Error
 }
 
 func (student *Student) IncreaseDiscussCnt() error {
-	return DB.Model(student).Updates(map[string]interface{}{
+	return database.Model(student).Updates(map[string]interface{}{
 		"discuss_cnt": student.DiscussCnt + 1,
 	}).Error
 }
 
 func (student *Student) DecreaseDiscussCnt() error {
-	return DB.Model(student).Updates(map[string]interface{}{
+	return database.Model(student).Updates(map[string]interface{}{
 		"discuss_cnt": student.DiscussCnt - 1,
 	}).Error
 }
 
 func (student *Student) UpdatePassword(password string) error {
-	return DB.Model(student).Updates(map[string]interface{}{
+	return database.Model(student).Updates(map[string]interface{}{
 		"password": password,
 	}).Error
 }
 
 func GetExistAdmin(id string) (bool, *Admin) {
 	var existAdmin = new(Admin)
-	result := DB.Model(&Admin{}).First(&existAdmin, id)
+	result := database.Model(&Admin{}).First(&existAdmin, id)
 	exist := !result.RecordNotFound()
 	if !exist {
 		return false, nil
@@ -297,14 +297,14 @@ func GetExistAdmin(id string) (bool, *Admin) {
 }
 
 func (course *Course) UpdateAvg(avg int) error {
-	return DB.Model(course).Updates(map[string]interface{}{
+	return database.Model(course).Updates(map[string]interface{}{
 		"score": avg,
 	}).Error
 }
 
 func GetAllCourses() []map[string]interface{} {
 	var courses []Course
-	DB.Model(&Course{}).Find(&courses)
+	database.Model(&Course{}).Find(&courses)
 	var courseInfos []map[string]interface{}
 	for _, course := range courses {
 		courseInfos = append(courseInfos, course.ToMap())
@@ -313,22 +313,22 @@ func GetAllCourses() []map[string]interface{} {
 }
 
 func (studentHomework *StudentHomework) Insert() error {
-	return DB.Model(&StudentHomework{}).Create(studentHomework).Error
+	return database.Model(&StudentHomework{}).Create(studentHomework).Error
 }
 
 func (studentHomework *StudentHomework) Delete() error {
-	return DB.Model(&StudentHomework{}).Delete(studentHomework).Error
+	return database.Model(&StudentHomework{}).Delete(studentHomework).Error
 }
 
 func GetStudentSelectedCourse(id string) []Course {
 	var thisStudentCourses []StudentCourse
-	DB.Model(&StudentCourse{}).Where(map[string]interface{}{
+	database.Model(&StudentCourse{}).Where(map[string]interface{}{
 		"student_id": id,
 	}).Find(&thisStudentCourses)
 	var courses []Course
 	for _, thisStudentCourse := range thisStudentCourses {
 		var thisCourse Course
-		DB.Model(&Course{}).First(&thisCourse, thisStudentCourse.CourseId)
+		database.Model(&Course{}).First(&thisCourse, thisStudentCourse.CourseId)
 		courses = append(courses, thisCourse)
 	}
 	return courses
@@ -343,7 +343,7 @@ func (course *Course) ToMap() map[string]interface{} {
 
 func GetCourseInfoById(id string) (map[string]interface{}, error) {
 	var thisCourse Course
-	result := DB.Model(&Course{}).First(&thisCourse, id)
+	result := database.Model(&Course{}).First(&thisCourse, id)
 	if result.RecordNotFound() {
 		return nil, errors.New("Course not found")
 	}
@@ -356,7 +356,7 @@ func GetExtraCourses(courses []Course) []map[string]interface{} {
 		ids = append(ids, value.CourseId)
 	}
 	var extraCourses []Course
-	DB.Model(&Course{}).Not(map[string]interface{}{"course_id": ids}).Find(&extraCourses)
+	database.Model(&Course{}).Not(map[string]interface{}{"course_id": ids}).Find(&extraCourses)
 	var courseInfos []map[string]interface{}
 	for _, course := range extraCourses {
 		courseInfos = append(courseInfos, course.ToMap())
@@ -366,7 +366,7 @@ func GetExtraCourses(courses []Course) []map[string]interface{} {
 
 func GetCourseHomeworks(id string) []string {
 	var homework_ids []string
-	DB.Model(&Homework{}).Where(map[string]interface{}{
+	database.Model(&Homework{}).Where(map[string]interface{}{
 		"course_id": id,
 	}).Pluck("homework_id", &homework_ids)
 	return homework_ids
@@ -380,7 +380,7 @@ func AddNewSelectHomework(studentId string, homework_ids []string) {
 			"homework_id": homework_id,
 		})
 	}
-	DB.Model(&StudentHomework{}).Create(stuHomeworkInfos)
+	database.Model(&StudentHomework{}).Create(stuHomeworkInfos)
 }
 
 //todo
