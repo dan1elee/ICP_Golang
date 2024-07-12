@@ -1,6 +1,7 @@
 package token
 
 import (
+	"ICP_Golang/enums"
 	"errors"
 	"time"
 
@@ -47,5 +48,8 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 }
 
 func HaveAccess(myClaims *MyClaims, level uint) bool {
-	return myClaims.UserAccess&level != 0
+	return myClaims.UserAccess == enums.STUDENT ||
+		myClaims.UserAccess == enums.TEACHER ||
+		myClaims.UserAccess == enums.ADMIN ||
+		myClaims.UserAccess&level != 0
 }
