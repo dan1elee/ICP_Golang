@@ -169,23 +169,14 @@ func TeacherRegister(c *gin.Context) {
 }
 
 func GetAllAvailableCourses(c *gin.Context) {
+	err := tokenValidation(c, enums.LEVELNORMAL)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
+		return
+	}
 	userName, exist := c.GetQuery("userName")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	userToken, exist := c.GetQuery("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
 		return
 	}
 	selectedCourses := model.GetStudentSelectedCourse(userName)
@@ -195,18 +186,9 @@ func GetAllAvailableCourses(c *gin.Context) {
 }
 
 func GetAllCourses(c *gin.Context) {
-	userToken, exist := c.GetQuery("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
+	err := tokenValidation(c, enums.LEVELNORMAL)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
 		return
 	}
 	// todo 权限验证具体文件权限
@@ -216,18 +198,9 @@ func GetAllCourses(c *gin.Context) {
 }
 
 func AddSelectCourse(c *gin.Context) {
-	userToken, exist := c.GetPostForm("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
+	err := tokenValidation(c, enums.LEVELNORMAL)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
 		return
 	}
 	// todo 权限验证具体文件权限
@@ -247,18 +220,9 @@ func AddSelectCourse(c *gin.Context) {
 }
 
 func GetCourseInfo(c *gin.Context) {
-	userToken, exist := c.GetPostForm("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
+	err := tokenValidation(c, enums.LEVELNORMAL)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
 		return
 	}
 	courseId, exist := c.GetQuery("courseId")
@@ -276,18 +240,9 @@ func GetCourseInfo(c *gin.Context) {
 }
 
 func StudentPasswordChange(c *gin.Context) {
-	userToken, exist := c.GetPostForm("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
+	err := tokenValidation(c, enums.LEVELNORMAL)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
 		return
 	}
 	studentId, exist := c.GetQuery("id")
@@ -312,18 +267,9 @@ func StudentPasswordChange(c *gin.Context) {
 }
 
 func TeacherPasswordChange(c *gin.Context) {
-	userToken, exist := c.GetPostForm("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
+	err := tokenValidation(c, enums.LEVELSECRET)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELSECRET) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
 		return
 	}
 	teacherId, exist := c.GetQuery("id")
@@ -348,18 +294,9 @@ func TeacherPasswordChange(c *gin.Context) {
 }
 
 func AdminPasswordChange(c *gin.Context) {
-	userToken, exist := c.GetPostForm("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
+	err := tokenValidation(c, enums.LEVELTOP)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELTOP) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
 		return
 	}
 	adminId, exist := c.GetQuery("id")
@@ -384,18 +321,9 @@ func AdminPasswordChange(c *gin.Context) {
 }
 
 func GetStudentSelectedCourse(c *gin.Context) {
-	userToken, exist := c.GetPostForm("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
+	err := tokenValidation(c, enums.LEVELNORMAL)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
 		return
 	}
 	studentId, exist := c.GetQuery("sid")
@@ -412,18 +340,9 @@ func GetStudentSelectedCourse(c *gin.Context) {
 }
 
 func DropSelectedCourse(c *gin.Context) {
-	userToken, exist := c.GetPostForm("token")
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
-		return
-	}
-	tokenStruct, err := token.ParseToken(userToken)
+	err := tokenValidation(c, enums.LEVELNORMAL)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
-		return
-	}
-	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
-		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
 		return
 	}
 	studentId, exist := c.GetQuery("sid")
