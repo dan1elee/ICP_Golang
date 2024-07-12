@@ -276,6 +276,20 @@ func GetCourseInfo(c *gin.Context) {
 }
 
 func StudentPasswordChange(c *gin.Context) {
+	userToken, exist := c.GetPostForm("token")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	tokenStruct, err := token.ParseToken(userToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		return
+	}
 	studentId, exist := c.GetQuery("id")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
@@ -288,7 +302,7 @@ func StudentPasswordChange(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
 	}
-	err := thisStudent.UpdatePassword(newPassword)
+	err = thisStudent.UpdatePassword(newPassword)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
@@ -298,6 +312,20 @@ func StudentPasswordChange(c *gin.Context) {
 }
 
 func TeacherPasswordChange(c *gin.Context) {
+	userToken, exist := c.GetPostForm("token")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	tokenStruct, err := token.ParseToken(userToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	if !token.HaveAccess(tokenStruct, enums.LEVELSECRET) {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		return
+	}
 	teacherId, exist := c.GetQuery("id")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
@@ -310,7 +338,7 @@ func TeacherPasswordChange(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
 	}
-	err := thisTeacher.UpdatePassword(newPassword)
+	err = thisTeacher.UpdatePassword(newPassword)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
@@ -320,6 +348,20 @@ func TeacherPasswordChange(c *gin.Context) {
 }
 
 func AdminPasswordChange(c *gin.Context) {
+	userToken, exist := c.GetPostForm("token")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	tokenStruct, err := token.ParseToken(userToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	if !token.HaveAccess(tokenStruct, enums.LEVELTOP) {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		return
+	}
 	adminId, exist := c.GetQuery("id")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
@@ -332,7 +374,7 @@ func AdminPasswordChange(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
 	}
-	err := thisAdmin.UpdatePassword(newPassword)
+	err = thisAdmin.UpdatePassword(newPassword)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
