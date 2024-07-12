@@ -35,6 +35,7 @@ func main() {
 			courses_api.GET("available/", api.GetAllAvailableCourses)
 			courses_api.GET("all/", api.GetAllCourses)
 			courses_api.PUT("select/", api.AddSelectCourse)
+			courses_api.GET("info/", api.GetCourseInfo)
 		}
 		password_api := icp_api.Group("password/")
 		{

@@ -341,7 +341,7 @@ func (course *Course) ToMap() map[string]interface{} {
 
 func GetCourseInfoById(id string) (map[string]interface{}, error) {
 	var thisCourse Course
-	result := DB.Model(&Course{}).First(&thisCourse)
+	result := DB.Model(&Course{}).First(&thisCourse, id)
 	if result.RecordNotFound() {
 		return nil, errors.New("Course not found")
 	}
