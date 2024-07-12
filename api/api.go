@@ -410,3 +410,29 @@ func GetStudentSelectedCourse(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "courses": courseInfos})
 	return
 }
+
+func DropSelectedCourse(c *gin.Context) {
+	userToken, exist := c.GetPostForm("token")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	tokenStruct, err := token.ParseToken(userToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		return
+	}
+	studentId, exist := c.GetQuery("sid")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+	}
+	courseId, exist := c.GetQuery("cid")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+	}
+	model.DropStudentCourse(studentId, courseId)
+}

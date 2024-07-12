@@ -533,3 +533,10 @@ func (SecondComment *SecondComment) BeforeDelete(db *gorm.DB) error {
 		return thisStudent.DecreaseDiscussCnt()
 	}
 }
+
+func DropStudentCourse(studentId string, courseId string) error {
+	return database.Model(&StudentCourse{}).Where(map[string]interface{}{
+		"student_id": studentId,
+		"course_id":  courseId,
+	}).Delete(&StudentCourse{}).Error
+}
