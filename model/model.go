@@ -294,10 +294,7 @@ func GetAllCourses() []map[string]interface{} {
 	DB.Model(&Course{}).Find(&courses)
 	var courseInfos []map[string]interface{}
 	for _, course := range courses {
-		courseBytes, _ := json.Marshal(&course)
-		courseInfo := new(map[string]interface{})
-		json.Unmarshal(courseBytes, courseInfo)
-		courseInfos = append(courseInfos, *courseInfo)
+		courseInfos = append(courseInfos, course.ToMap())
 	}
 	return courseInfos
 }
@@ -322,15 +319,19 @@ func GetStudentSelectedCourse(id string) []string {
 	return courseIds
 }
 
+func (course *Course) ToMap() map[string]interface{} {
+	courseBytes, _ := json.Marshal(&course)
+	courseInfo := new(map[string]interface{})
+	json.Unmarshal(courseBytes, courseInfo)
+	return *courseInfo
+}
+
 func GetExtraCourses(ids []string) []map[string]interface{} {
 	var courses []Course
 	DB.Model(&Course{}).Not(map[string]interface{}{"course_id": ids}).Find(&courses)
 	var courseInfos []map[string]interface{}
 	for _, course := range courses {
-		courseBytes, _ := json.Marshal(&course)
-		courseInfo := new(map[string]interface{})
-		json.Unmarshal(courseBytes, courseInfo)
-		courseInfos = append(courseInfos, *courseInfo)
+		courseInfos = append(courseInfos, course.ToMap())
 	}
 	return courseInfos
 }
