@@ -247,6 +247,20 @@ func AddSelectCourse(c *gin.Context) {
 }
 
 func GetCourseInfo(c *gin.Context) {
+	userToken, exist := c.GetPostForm("token")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	tokenStruct, err := token.ParseToken(userToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	if !token.HaveAccess(tokenStruct, enums.LEVELNORMAL) {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden})
+		return
+	}
 	courseId, exist := c.GetQuery("courseId")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
