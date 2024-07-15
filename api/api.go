@@ -348,12 +348,20 @@ func DropSelectedCourse(c *gin.Context) {
 	studentId, exist := c.GetQuery("sid")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
 	}
 	courseId, exist := c.GetQuery("cid")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
 	}
-	model.DropStudentCourse(studentId, courseId)
+	err = model.DropStudentCourse(studentId, courseId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
 }
 
 func GetTeacherCourseList(c *gin.Context) {
