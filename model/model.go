@@ -350,6 +350,18 @@ func GetCourseInfoById(id string) (map[string]interface{}, error) {
 	return thisCourse.ToMap(), nil
 }
 
+func GetCoursesInfoByTeacherId(teacherId string) []map[string]interface{} {
+	var courses []Course
+	database.Model(&Course{}).Where(map[string]interface{}{
+		"teacher_id": teacherId,
+	}).Find(&courses)
+	var coursesInfo []map[string]interface{}
+	for _, course := range courses {
+		coursesInfo = append(coursesInfo, course.ToMap())
+	}
+	return coursesInfo
+}
+
 func GetExtraCourses(courses []Course) []map[string]interface{} {
 	var ids []string
 	for _, value := range courses {

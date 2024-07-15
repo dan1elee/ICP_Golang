@@ -355,3 +355,18 @@ func DropSelectedCourse(c *gin.Context) {
 	}
 	model.DropStudentCourse(studentId, courseId)
 }
+
+func GetTeacherCourseList(c *gin.Context) {
+	err := tokenValidation(c, enums.LEVELSECRET)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
+		return
+	}
+	teacherId, exist := c.GetQuery("id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	coursesInfo := model.GetCoursesInfoByTeacherId(teacherId)
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "courses": coursesInfo})
+}
