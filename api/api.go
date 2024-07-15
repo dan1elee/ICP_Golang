@@ -3,6 +3,7 @@ package api
 import (
 	"ICP_Golang/encrypt"
 	"ICP_Golang/enums"
+	"ICP_Golang/idhandler"
 	"ICP_Golang/model"
 	"ICP_Golang/token"
 	"fmt"
@@ -377,4 +378,36 @@ func GetTeacherCourseList(c *gin.Context) {
 	}
 	coursesInfo := model.GetCoursesInfoByTeacherId(teacherId)
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "courses": coursesInfo})
+	return
+}
+
+func BuildCourse(c *gin.Context) {
+	err := tokenValidation(c, enums.LEVELSECRET)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
+		return
+	}
+	teacherId, exist := c.GetPostForm("id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	courseName, exist := c.GetPostForm("name")
+	if !exist || courseName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	courseIntro, exist := c.GetPostForm("intro")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	newCourse := model.Course{CourseId: idhandler.GenCourseId(), Name: courseName, Introduction: courseIntro, TeacherId: teacherId}
+	err = newCourse.Insert()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "err": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
 }

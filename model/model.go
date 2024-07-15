@@ -41,7 +41,7 @@ type Admin struct {
 type Course struct {
 	CourseId     string  `gorm:"type:varchar(40);primary_key;unique_index" json:"course_id"`
 	Name         string  `gorm:"type:varchar(128)" json:"course_name"`
-	Score        float32 `json:"score"`
+	Score        float32 `gorm:"default:5.0" json:"score"`
 	Introduction string  `gorm:"type:varchar(1000)" json:"course_intro"`
 	TeacherId    string  `gorm:"type:varchar(40)" json:"teacher_id"`
 }
@@ -294,6 +294,10 @@ func GetExistAdmin(id string) (bool, *Admin) {
 	} else {
 		return true, existAdmin
 	}
+}
+
+func (course *Course) Insert() error {
+	return database.Model(&Course{}).Create(course).Error
 }
 
 func (course *Course) UpdateAvg(avg int) error {
