@@ -300,6 +300,13 @@ func (course *Course) Insert() error {
 	return database.Model(&Course{}).Create(course).Error
 }
 
+func CourseUpdate(courseId string, newName string, newIntro string) error {
+	return database.Model(&Course{CourseId: courseId}).Updates(map[string]interface{}{
+		"name":         newName,
+		"introduction": newIntro,
+	}).Error
+}
+
 func (course *Course) UpdateAvg(avg int) error {
 	return database.Model(course).Updates(map[string]interface{}{
 		"score": avg,

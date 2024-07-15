@@ -411,3 +411,32 @@ func BuildCourse(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 	return
 }
+
+func UpdateCourse(c *gin.Context) {
+	err := tokenValidation(c, enums.LEVELSECRET)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
+		return
+	}
+	courseId, exist := c.GetQuery("cid")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	courseName, exist := c.GetQuery("name")
+	if !exist || courseName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	courseIntro, exist := c.GetQuery("intro")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	err = model.CourseUpdate(courseId, courseName, courseIntro)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+}
