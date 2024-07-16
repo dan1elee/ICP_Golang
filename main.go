@@ -40,6 +40,7 @@ func main() {
 			courses_api.DELETE("drop/", api.DropSelectedCourse)
 			courses_api.GET("teacherlist/", api.GetTeacherCourseList)
 			courses_api.POST("newcourse/", api.BuildCourse)
+			courses_api.PUT("updateinfo/", api.UpdateCourse)
 		}
 		password_api := icp_api.Group("password/")
 		{
