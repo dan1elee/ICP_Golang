@@ -300,6 +300,10 @@ func (course *Course) Insert() error {
 	return database.Model(&Course{}).Create(course).Error
 }
 
+func (course *Course) Delete() error {
+	return database.Model(&Course{}).Delete(course).Error
+}
+
 func CourseUpdate(courseId string, newName string, newIntro string) error {
 	return database.Model(&Course{CourseId: courseId}).Updates(map[string]interface{}{
 		"name":         newName,
@@ -418,6 +422,12 @@ func (course *Course) BeforeDelete(db *gorm.DB) error {
 	var thisTeacher Teacher
 	db.Model(&Teacher{}).First(&thisTeacher, course.TeacherId)
 	return thisTeacher.DecreaseCourseCnt()
+}
+
+func DeleteCourse(id string) error {
+	var thisCourse Course
+	database.Model(&Course{}).First(&thisCourse, id)
+	return thisCourse.Delete()
 }
 
 func (courseEval *CourseEval) AfterSave(db *gorm.DB) error {
