@@ -433,6 +433,12 @@ func GetCourseCommentList(courseId string) []map[string]interface{} {
 	return courseEvalInfos
 }
 
+func DeleteCourseEval(commentId string) error {
+	var thisEval CourseEval
+	database.Model(&CourseEval{}).First(&thisEval, commentId)
+	return thisEval.Delete()
+}
+
 //todo
 
 func (course *Course) AfterSave(db *gorm.DB) error {
@@ -451,6 +457,10 @@ func DeleteCourse(id string) error {
 	var thisCourse Course
 	database.Model(&Course{}).First(&thisCourse, id)
 	return thisCourse.Delete()
+}
+
+func (courseEval *CourseEval) Delete() error {
+	return database.Model(&CourseEval{}).Delete(courseEval).Error
 }
 
 func (courseEval *CourseEval) AfterSave(db *gorm.DB) error {

@@ -530,3 +530,18 @@ func CommentCourse(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 	return
 }
+
+func DeleteComment(c *gin.Context) {
+	commentId, exist := c.GetQuery("id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	err := model.DeleteCourseEval(commentId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
+}
