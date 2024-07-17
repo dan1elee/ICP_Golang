@@ -350,10 +350,17 @@ func GetStudentSelectedCourse(id string) []Course {
 }
 
 func (course *Course) ToMap() map[string]interface{} {
-	courseBytes, _ := json.Marshal(&course)
+	courseBytes, _ := json.Marshal(course)
 	courseInfo := new(map[string]interface{})
 	json.Unmarshal(courseBytes, courseInfo)
 	return *courseInfo
+}
+
+func (courseEval *CourseEval) ToMap() map[string]interface{} {
+	courseEvalBytes, _ := json.Marshal(courseEval)
+	courseEvalInfo := new(map[string]interface{})
+	json.Unmarshal(courseEvalBytes, courseEvalInfo)
+	return *courseEvalInfo
 }
 
 func GetCourseInfoById(id string) (map[string]interface{}, error) {
@@ -408,6 +415,18 @@ func AddNewSelectHomework(studentId string, homework_ids []string) {
 		})
 	}
 	database.Model(&StudentHomework{}).Create(stuHomeworkInfos)
+}
+
+func GetCourseCommentList(courseId string) []map[string]interface{} {
+	var comments []CourseEval
+	database.Model(&CourseEval{}).Where(map[string]interface{}{
+		"course_id": courseId,
+	}).Find(&comments)
+	var courseEvalInfos []map[string]interface{}
+	for _, comment := range comments {
+		courseEvalInfos = append(courseEvalInfos, comment.ToMap())
+	}
+	return courseEvalInfos
 }
 
 //todo
