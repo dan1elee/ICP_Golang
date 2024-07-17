@@ -57,8 +57,8 @@ type CourseEval struct {
 	Time      time.Time
 	Content   string `gorm:"type:varchar(1000)"`
 	Score     int    `gorm:"default:5"`
-	StudentId int    `gorm:"type:varchar(40)"`
-	CourseId  int    `gorm:"type:varchar(40)"`
+	StudentId string `gorm:"type:varchar(40)"`
+	CourseId  string `gorm:"type:varchar(40)"`
 }
 
 type Homework struct {
@@ -361,6 +361,10 @@ func (courseEval *CourseEval) ToMap() map[string]interface{} {
 	courseEvalInfo := new(map[string]interface{})
 	json.Unmarshal(courseEvalBytes, courseEvalInfo)
 	return *courseEvalInfo
+}
+
+func (courseEval *CourseEval) Insert() error {
+	return database.Model(&CourseEval{}).Create(courseEval).Error
 }
 
 func GetCourseInfoById(id string) (map[string]interface{}, error) {

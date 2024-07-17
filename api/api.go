@@ -8,6 +8,8 @@ import (
 	"ICP_Golang/token"
 	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -475,4 +477,56 @@ func GetCommentList(c *gin.Context) {
 	}
 	courseCommentList := model.GetCourseCommentList(courseId)
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "comments": courseCommentList})
+}
+
+func CommentCourse(c *gin.Context) {
+	courseId, exist := c.GetQuery("cid")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	userId, exist := c.GetQuery("uid")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	content, exist := c.GetQuery("content")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	timeStr, exist := c.GetQuery("time")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	timeVal, err := time.ParseInLocation("2006-01-02 15:04:05", timeStr, time.Local)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	score, exist := c.GetQuery("score")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	scoreValue, err := strconv.Atoi(score)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	var courseEval model.CourseEval
+	courseEval.EvalId = idhandler.GenEvalId()
+	courseEval.Time = timeVal
+	courseEval.Content = content
+	courseEval.Score = scoreValue
+	courseEval.StudentId = userId
+	courseEval.CourseId = courseId
+	err = courseEval.Insert()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	return
 }
