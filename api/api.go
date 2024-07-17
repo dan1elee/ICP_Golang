@@ -480,6 +480,11 @@ func GetCommentList(c *gin.Context) {
 }
 
 func CommentCourse(c *gin.Context) {
+	err := tokenValidation(c, enums.LEVELNORMAL)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
+		return
+	}
 	courseId, exist := c.GetQuery("cid")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
@@ -532,12 +537,17 @@ func CommentCourse(c *gin.Context) {
 }
 
 func DeleteComment(c *gin.Context) {
+	err := tokenValidation(c, enums.LEVELNORMAL)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"status": http.StatusForbidden, "err": err})
+		return
+	}
 	commentId, exist := c.GetQuery("id")
 	if !exist {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
 	}
-	err := model.DeleteCourseEval(commentId)
+	err = model.DeleteCourseEval(commentId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest})
 		return
